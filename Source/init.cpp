@@ -20,7 +20,6 @@ int _newlib_heap_size_user = 100 * 1024 * 1024;
 
 DEVILUTION_BEGIN_NAMESPACE
 
-_SNETVERSIONDATA fileinfo;
 /** True if the game is the current active window */
 int gbActive;
 /** A handle to an hellfire.mpq archive. */
@@ -140,17 +139,14 @@ static void init_get_file_info()
 
 void init_archives()
 {
-	HANDLE fh = NULL;
-	memset(&fileinfo, 0, sizeof(fileinfo));
-	fileinfo.size = sizeof(fileinfo);
-	fileinfo.versionstring = gszVersionNumber;
 	init_get_file_info();
 
 	std::vector<std::string> paths;
 	paths.reserve(5);
 	paths.push_back(GetBasePath());
 	paths.push_back(GetPrefPath());
-	if (paths[0] == paths[1]) paths.pop_back();
+	if (paths[0] == paths[1])
+		paths.pop_back();
 
 #ifdef __linux__
 	paths.push_back("/usr/share/diasurgical/devilutionx/");
@@ -170,6 +166,7 @@ void init_archives()
 		if (spawn_mpq != NULL)
 			gbIsSpawn = true;
 	}
+	HANDLE fh = NULL;
 	if (!SFileOpenFile("ui_art\\title.pcx", &fh))
 		InsertCDDlg();
 	SFileCloseFile(fh);
@@ -193,8 +190,7 @@ void init_archives()
 	hfopt1_mpq = init_test_access(paths, "hfopt1.mpq", "DiabloInstall", 8600, FS_PC);
 	hfopt2_mpq = init_test_access(paths, "hfopt2.mpq", "DiabloInstall", 8610, FS_PC);
 
-	if (gbIsHellfire && (hfmonk_mpq == NULL || hfmusic_mpq == NULL || hfvoice_mpq == NULL))
-	{
+	if (gbIsHellfire && (hfmonk_mpq == NULL || hfmusic_mpq == NULL || hfvoice_mpq == NULL)) {
 		UiErrorOkDialog("Some Hellfire MPQs are missing", "Not all Hellfire MPQs were found.\nPlease copy all the hf*.mpq files.");
 		app_fatal(NULL);
 	}
