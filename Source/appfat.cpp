@@ -7,10 +7,12 @@
 #include "../3rdParty/Storm/Source/storm.h"
 #include <config.h>
 
-DEVILUTION_BEGIN_NAMESPACE
+namespace dvl {
+
+namespace {
 
 /** Set to true when a fatal error is encountered and the application should shut down. */
-BOOL terminating;
+bool terminating = false;
 /** Thread id of the last callee to FreeDlg(). */
 SDL_threadID cleanup_thread_id;
 
@@ -19,7 +21,7 @@ SDL_threadID cleanup_thread_id;
  * @param pszFmt Error message format
  * @param va Additional parameters for message format
  */
-static void MsgBox(const char *pszFmt, va_list va)
+void MsgBox(const char *pszFmt, va_list va)
 {
 	char text[256];
 
@@ -31,12 +33,12 @@ static void MsgBox(const char *pszFmt, va_list va)
 /**
  * @brief Cleans up after a fatal application error.
  */
-static void FreeDlg()
+void FreeDlg()
 {
 	if (terminating && cleanup_thread_id != SDL_GetThreadID(NULL))
 		SDL_Delay(20000);
 
-	terminating = TRUE;
+	terminating = true;
 	cleanup_thread_id = SDL_GetThreadID(NULL);
 
 	if (gbIsMultiplayer) {
@@ -45,6 +47,8 @@ static void FreeDlg()
 	}
 
 	SNetDestroy();
+}
+
 }
 
 /**
@@ -91,7 +95,7 @@ void DrawDlg(const char *pszFmt, ...)
  * @param pszFile File name where the assertion is located
  * @param pszFail Fail message
  */
-void assert_fail(int nLineNo, const char *pszFile, const char *pszFail)
+void assert_fail(Sint32 nLineNo, const char *pszFile, const char *pszFail)
 {
 	app_fatal("assertion failed (%s:%d)\n%s", pszFile, nLineNo, pszFail);
 }
@@ -100,7 +104,7 @@ void assert_fail(int nLineNo, const char *pszFile, const char *pszFail)
 /**
  * @brief Terminates the game and displays an error dialog box based on the given dialog_id.
  */
-void ErrDlg(const char *title, const char *error, const char *log_file_path, int log_line_nr)
+void ErrDlg(const char *title, const char *error, const char *log_file_path, Sint32 log_line_nr)
 {
 	char text[1024];
 
@@ -169,4 +173,4 @@ void DirErrorDlg(const char *error)
 	app_fatal(NULL);
 }
 
-DEVILUTION_END_NAMESPACE
+}
